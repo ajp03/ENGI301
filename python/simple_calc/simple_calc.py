@@ -68,6 +68,10 @@ Error conditions:
 # NOTE - Global variable to map an operator string (e.g. "+") to 
 # NOTE - the appropriate function.
 import operator
+import sys
+
+if sys.version[0] == "2":
+    input = raw_input
 
 operators = {
     # Dictionary syntax:  "key" : "value"
