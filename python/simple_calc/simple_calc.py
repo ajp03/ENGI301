@@ -103,7 +103,7 @@ def get_user_input():
         # NOTE - fill out the contents.  This pass statement should be removed 
         number1 = float(input("Enter first number : "))
         number2 = float(input("Enter second number: "))
-        op      = input("Enter function (valid values are +, -, *, /): ")
+        op      = input("Enter function (valid values are +, -, *, /, >>, <<, **, %): ")
         
         func = operators.get(op)
         
