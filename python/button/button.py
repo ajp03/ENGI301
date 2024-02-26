@@ -157,7 +157,7 @@ class Button():
         # Initialize Button
         # HW#4 TODO: (one line of code)
         #   Remove "pass" and use the Adafruit_BBIO.GPIO library to set up the button
-        GPIO.setup("P2_2", GPIO.OUT)
+        GPIO.setup("P2_2", GPIO.IN)
         
     # End def
 
@@ -172,7 +172,7 @@ class Button():
         #   Remove "pass" and return the comparison of input value of the GPIO pin of 
         #   the button (i.e. self.pin) to the "pressed value" of the class 
         
-        self.pin == LOW
+        return GPIO.input(self.pin) == self.pressed_value
 
     # End def
 
@@ -200,7 +200,7 @@ class Button():
         #   of the class (i.e. we are executing the while loop while the 
         #   button is not being pressed)
         #
-        while(False):
+        while(GPIO.input(self.pin) == self.unpressed_value):
         
             if self.unpressed_callback is not None:
                 self.unpressed_callback_value = self.unpressed_callback()
@@ -223,7 +223,7 @@ class Button():
         #   of the class (i.e. we are executing the while loop while the 
         #   button is being pressed)
         #
-        while(False):
+        while(GPIO.input(self.pin) == self.pressed_value):
         
             if self.pressed_callback is not None:
                 self.pressed_callback_value = self.pressed_callback()
