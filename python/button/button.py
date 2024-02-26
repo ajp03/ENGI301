@@ -157,7 +157,7 @@ class Button():
         # Initialize Button
         # HW#4 TODO: (one line of code)
         #   Remove "pass" and use the Adafruit_BBIO.GPIO library to set up the button
-        GPIO.setup("P2_2", GPIO.IN)
+        GPIO.setup("P2_2", GPIO.IN) #can change "P2_2" to self.pin to generalize
         
     # End def
 
