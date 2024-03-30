@@ -171,8 +171,9 @@ class HT16K33():
         print("    Address = 0x{0:x}".format(address))
 
         # Set up display        
-        
+        self.setup(blink, brightness)
         # Set display to blank
+        self.blank()
             
     # End def
     
@@ -286,7 +287,13 @@ class HT16K33():
         """
 
         # Modify code to implement this function
-        print("Set value = {0}".format(value)) # Remove when updating code
+        if ((value < 0) or (value > 9999)):
+            raise ValueError("Value is not between 0 and 9999")
+            self.set_digit(3, (value % 10))
+            self.set_digit(2, (value // 10) % 10)
+            self.set_digit(1, (value // 100) % 10)
+            self.set_digit(0, (value // 1000) % 10)
+            print("Set value = {0}".format(value)) # Remove when updating code
 
     # End def
     
