@@ -32,28 +32,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
 
 Use the following hardware components to make Pocket Plant:  
-  - HD44780 LCD Display
+  - HT16K33 Display
   - Soil Moisture Sensor
-  - Joystick
+  - Button
   - Pump (and relay)
-  - Tri-color LED
+  - Green LED
+  - Red LED
   - Light Sensor
 
 Requirements:
   - Hardware:
-    - When locked:   Red LED is on; Green LED is off; Servo is "closed"; Display is unchanged
-    - When unlocked: Red LED is off; Green LED is on; Servo is "open"; Display is "----"
-    - Display shows value of potentiometer (raw value of analog input divided by 8)
-    - Button
-      - Waiting for a button press should allow the display to update (if necessary) and return any values
-      - Time the button was pressed should be recorded and returned
+    - Default State: Needs to be able to take user input from button to increment display, pump off,
+    green led on, red led off, light and moisture sensor monitoring
+    - Watering State: Pump on, green led flashing, red led off, display WATR
+    - Poor Light Conditions State: Pump off, red led on, display POOR
     - User interaction:
-      - Needs to be able to program the combination for the “lock”
-        - Need to be able to input three values for the combination to program or unlock the “lock”
-      - Combination lock should lock when done programming and wait for combination input
-      - If combination is unsuccessful, the lock should go back to waiting for combination input
-      - If combination was successful, the lock should unlock
-        - When unlocked, pressing button for less than 2s will re-lock the lock; greater than 2s will allow lock to be re-programmed
+      - Needs to be able to increment the counter using the button
+        - press button to increase by 1
+      - Needs to be able to reset counter 
+        - press and hold button for 2 seconds
+    
 
 Uses:
   - HT16K33 display library developed in class
@@ -62,20 +60,19 @@ Uses:
 """
 import time
 
-import joystick      as JOYSTICK
-import LCD           as LCD
+import button        as button
+import ht16k33       as HT16K33
 import soil_sensor   as SOIL
 import light_sesnor  as LIGHT
 import pump          as PUMP
-import tricolor_led  as LED
+import tricolor_led  as TRILED
+import led           as LED
 
 # ------------------------------------------------------------------------
 # Constants
 # ------------------------------------------------------------------------
 
-SERVO_LOCK         = 100     # Fully anti-clockwise
-SERVO_UNLOCK       = 0       # Fully clockwise
-POT_DIVIDER        = 8       # Divider used to help reduce potentiometer granularity
+#None
 
 # ------------------------------------------------------------------------
 # Global variables
@@ -90,11 +87,13 @@ POT_DIVIDER        = 8       # Divider used to help reduce potentiometer granula
 class PocketPlant():
     """ PocketPlant """
     reset_time     = None
-    lcd            = None
     soil_sensor    = None
     light_sesnor   = None
     pump           = None
-    joystick       = None
+    button         = None
+    red_led        = None
+    green_led      = None
+    display        = None
     debug          = None
     
     def __init__(self, reset_time=2.0, button="P2_2", 
@@ -105,15 +104,14 @@ class PocketPlant():
         """ Initialize variables and set up display """
 
         self.reset_time     = reset_time
-        self.button         = BUTTON.Button(button)
-        self.red_led        = LED.LED(red_led)
+        self.soil_sensor    = SOIL.soil_sensor(soil_sensor) #is this supposed to be in here
+        self.light_sensor   = LIGHT.light_sensor(light_sensor) 
         self.green_led      = LED.LED(green_led)
-        self.potentiometer  = POT.Potentiometer(potentiometer)
-        self.servo          = SERVO.Servo(servo, default_position=SERVO_LOCK)
+        self.red_led        = LED.LED(red_led)
+        self.pump           = PUMP.pump() #what goes in here
         self.display        = HT16K33.HT16K33(i2c_bus, i2c_address)
-        self.buzzer         = MUSIC.BuzzerMusic(buzzer)
+        self.button         = BUTTON.button(button)
         self.debug          = debug
-        
         self._setup()
     
     # End def
@@ -124,118 +122,91 @@ class PocketPlant():
 
         # Initialize Display
         self.set_display_dash()
+        
+        #set up soil sensor (does this have to go here)
+        self.soil_sensor.setup_sensor()
 
-        # Button / LEDs / Potentiometer / Servo 
+        # Button / LEDs / Servo 
         #   - All initialized by libraries when instanitated
 
     # End def
+    
+    def default(self)
+    """Set up default state."""
+    # End def
 
-
-    def lock(self):
-        """Lock the lock:
-               - Turn on red LED; Turn off green LED
-               - Set servo to closed
-        """
-        if self.debug:
-            print("lock()")
+    
+    def count(self)
+    """ Increment display to count harvests
+            - change display by 1 when button is pressed 
+            - reset display when press and hold button
+    
+    """
+        harvest_count                = 0        # Number of harvests to be displayed
+        button_press_time            = 0.0      # Time button was pressed (in seconds)
         
-        # Set LEDs
+        while(1):
+            # Wait for button press and get the press time
+            self.button.wait_for_press()
+            button_press_time = self.button.get_last_press_duration()            
+    
+            # Compare time to increment or reset harvest_count
+            if (button_press_time < self.reset_time):
+                if harvest_count < HT16K33.HT16K33_MAX_VALUE:
+                    harvest_count = harvest_count + 1
+                else:
+                    harvest_count = 0
+            else:
+                harvest_count = 0
+            
+            # Update the display
+            self.display.update(people_count)
+
+    # End def
+
+   
+   #do i need the start and stop watering
+    def start_watering(self):
+        """Water plant.
+            - red LED on
+            - turn pump on
+        """
+        #turn on pump
+        self.pump.on()
+        
+        #turn on red LED
         self.red_led.on()
-        self.green_led.off()
-        self.servo.turn(SERVO_LOCK)
         
-        #play a song
-        self.buzzer.play_song_from_list(1)
-
-        # Set servo to "locked"
-
-    # End def
-
-
-    def unlock(self):
-        """Unlock the lock.
-               - Turn off red LED; Turn on green LED
-               - Set servo to open
-               - Set display to "----"
-        """
-        if self.debug:
-            print("unlock()")
-            
-        # Set LEDs
-        self.red_led.off()
+        #turn off green LED
         self.green_led.on()
-        # Set servo to "unlocked"
-        self.servo.turn(SERVO_UNLOCK)
-        # Set display to dash
-        self.set_display_dash()
-
+       
     # End def
-
-
-    def show_analog_value(self):
-        """Show the analog value on the screen:
-               - Read raw analog value
-               - Divide by 4 (remove two LSBs)
-               - Display value
-               - Return value
+    
+    def stop_watering(self):
+        """Stop watering plant.
+            - red LED off
+            - pump off
         """
-        if self.debug:
-            print("show_analog_value()")
-            
-        # Read value from Potentiometer
-        value = self.potentiometer.get_value()
+        #turn off pump
+        self.pump.on()
         
-
-        # Divide value by POT_DIVIDER
-        value = value // POT_DIVIDER
-
-        # Update display (must be an integer)
-        self.display.update(value)
+        #turn off red led
+        self.red_led.on()
         
-        # Return value
-        return value
-
     # End def
-
-
-    def input_combination(self):
-        """Input a combination for the lock:
-               - Wait for a button press doing nothing (start of user inputing combination)
-               - Repeat 3 time:
-                 - Wait for button press; show analog value
-                 - Record analog value
-               - Return combination
+    
+    
+    def light_monitor(self):
+        """Check light quality.
+            - if below threshold, red LED on
+            - if above threshold, green LED on 
         """
-        # Initialize combination array
-        combination = [None, None, None]
-        
-        for i in range(3):
-            # Update display with current input
-            self.set_display_input(i+1)
-
-            # Wait for button press (do nothing)
-            self.button.wait_for_press()
-            
-            # Set button unpressed callback function
-            self.button.set_unpressed_callback(self.show_analog_value)
-
-            # Wait for button press (show analog value)
-            self.button.wait_for_press()
-            
-            # Get callback function value from button
-            value = self.button.get_unpressed_callback_value()
-            
-            # Remove button unpressed callback function
-            self.button.set_unpressed_callback(None)
-
-            # Record Analog value
-            combination[i] = value
-
-        if self.debug:
-            print(combination)
-            
-        return combination
-
+        if self.light_check > threshold:
+            self.green_led.on
+            self.red_led.off
+        else:
+            self.green_led.off
+            self.red_led.on
     # End def
 
 
@@ -246,83 +217,36 @@ class PocketPlant():
         program                      = True
         
         # Unlock the lock
-        self.unlock()        
+        self.default()        
         time.sleep(1)
                 
         while(1):
-            
-            # Program the lock
-            if (program):
-                if self.debug:
-                    print("Program Lock")
-                
-                # Set display
-                self.set_display_prog()
-                
-                # Wait for button press (do nothing)
-                self.button.wait_for_press()
-                
-                # Get combination
-                combination = self.input_combination()
-                
-                # Lock the lock
-                self.lock()
-        
-                # Set program lock to False
-                program = False
-
-            # Set Display to try combination
-            self.set_display_try()
+            # Set Display to 0000
+            self.set_display_default()
 
             # Wait for button press (do nothing)
             self.button.wait_for_button
                 
-            # Get combination
-            combo_attempt = self.input_combination()
-
-            # Compare attempt against combination
-            combo_pass = True
-
-            for i in range(2):
-                if combination[i] != combo_attempt[i]:
-                    combo_pass = False
-
-            # If combination passed
-            if combo_pass:
-                if self.debug:
-                    
-                    print("Combination Passed")
-                # Unlock the lock
-                self.unlock
-
-                # Wait for button press
-                self.button.wait_for_press()
-                
-                # Get press duration
-                press_duration = self.get_last_press_durationbutton_press_time()
-                
-                
-                # If greater than reset_time, program lock, else lock the lock
-                if press_duration > self.reset_time:
-                    program = True
-                else:
-                    self.lock()
+            # Monitor light
+            self.light_monitor()
             
+            #Monitor water and water if needed
+            if self.soil_sensor.read_moisture < 500 #choose some threshold
+                self.pump.on
+                self.green_led.off
+                while self.soil_sensor.read_moisture < 500:
+                    self.red_led.on
+                    time.sleep(.1)
+                    self.red_led.off
+                    time.sleep(.1)
             time.sleep(1)
 
     # End def
 
 
-    def set_display_prog(self):
-        """Set display to word "Prog" """
-        self.display.text("Prog")
-
-    # End def
-
-
-    def set_display_try(self):
-        """Set display to word " go " """
-        self.display.text(" go ")
+    def set_display_default(self):
+        """Set display to word "0000" """
+        self.display.text("0000")
 
     # End def
 
@@ -351,8 +275,6 @@ class PocketPlant():
         self.button.cleanup()
         self.red_led.cleanup()
         self.green_led.cleanup()
-        self.potentiometer.cleanup()
-        self.servo.cleanup()
 
     # End def
 

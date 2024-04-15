@@ -3,7 +3,7 @@
 LED Driver
 --------------------------------------------------------------------------
 License:   
-Copyright 2023 <NAME>
+Copyright 2023 Amelia Pillar
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:

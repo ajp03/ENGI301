@@ -33,7 +33,7 @@ def setup_sensor():
 
 
 def read_moisture():
-    """ set up stuff and read moisture level"""
+    """ set up and read moisture level"""
    
     touch = ss.moisture_read()
     if touch < 580:
