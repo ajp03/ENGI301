@@ -67,6 +67,7 @@ import button        as BUTTON
 import potentiometer as POT
 import servo         as SERVO
 import led           as LED
+import buzzer_music   as MUSIC
 
 # ------------------------------------------------------------------------
 # Constants
@@ -96,11 +97,13 @@ class CombinationLock():
     potentiometer  = None
     servo          = None
     display        = None
+    buzzer         = None
     debug          = None
     
     def __init__(self, reset_time=2.0, button="P2_2", 
                        red_led="P2_6", green_led="P2_4",
-                       potentiometer="P1_19", servo="P1_36", 
+                       potentiometer="P1_19", servo="P1_36",
+                       buzzer-"P2_1",
                        i2c_bus=1, i2c_address=0x70, debug=False):
         """ Initialize variables and set up display """
 
@@ -111,6 +114,7 @@ class CombinationLock():
         self.potentiometer  = POT.Potentiometer(potentiometer)
         self.servo          = SERVO.Servo(servo, default_position=SERVO_LOCK)
         self.display        = HT16K33.HT16K33(i2c_bus, i2c_address)
+        self.buzzer         = MUSIC.BuzzerMusic(buzzer)
         self.debug          = debug
         
         self._setup()
@@ -142,6 +146,9 @@ class CombinationLock():
         self.red_led.on()
         self.green_led.off()
         self.servo.turn(SERVO_LOCK)
+        
+        #play a song
+        self.buzzer.play_song_from_list(1)
 
         # Set servo to "locked"
 

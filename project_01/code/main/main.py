@@ -88,7 +88,7 @@ class PocketPlant():
     """ PocketPlant """
     reset_time     = None
     soil_sensor    = None
-    light_sesnor   = None
+    light_sensor   = None
     pump           = None
     button         = None
     red_led        = None
@@ -125,6 +125,8 @@ class PocketPlant():
         
         #set up soil sensor (does this have to go here)
         self.soil_sensor.setup_sensor()
+        
+        self.light_sensor.setup_sensor()
 
         # Button / LEDs / Servo 
         #   - All initialized by libraries when instanitated
@@ -212,11 +214,7 @@ class PocketPlant():
 
     def run(self):
         """Execute the main program."""
-        combination                  = [None, None, None]  # Combination
-        combo_attempt                = [None, None, None]  # Combination attempt
-        program                      = True
-        
-        # Unlock the lock
+       
         self.default()        
         time.sleep(1)
                 
@@ -229,6 +227,9 @@ class PocketPlant():
                 
             # Monitor light
             self.light_monitor()
+            
+            #Track harvests
+            self.count()
             
             #Monitor water and water if needed
             if self.soil_sensor.read_moisture < 500 #choose some threshold
