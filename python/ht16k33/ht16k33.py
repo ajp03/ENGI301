@@ -171,7 +171,7 @@ class HT16K33():
         print("    Address = 0x{0:x}".format(address))
 
         # Set up display        
-        self.setup(blink, brightness)
+        self._setup(blink, brightness)
         # Set display to blank
         self.blank()
             
