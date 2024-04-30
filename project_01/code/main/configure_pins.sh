@@ -32,16 +32,22 @@
 # --------------------------------------------------------------------------
 # 
 # Configure pins for Pocket Plant:
-#   - I2C1
+#   - I2C1 
+#   - I2C2
 #   - Button
 #   - LEDs (Red / Green)
-#   - Servo
+#   - Pump
+#   - Soil sensor
 # 
 # --------------------------------------------------------------------------
 
-# I2C1
+# I2C1 display
 config-pin P2_09 i2c
 config-pin P2_11 i2c
+
+# I2C2 light sensor
+config-pin P1_26 i2c
+config-pin P1_28 i2c
 
 # Button
 config-pin P2_02 gpio
@@ -50,8 +56,9 @@ config-pin P2_02 gpio
 config-pin P2_04 gpio
 config-pin P2_06 gpio
 
-# Servo
-config-pin P1_36 pwm
+# Pump
+config-pin P1_36 gpio
 
-# Buzzer
-config-pin P2_01 pwm
+#Soil Sensor
+config-pin P1_23 gpio
+
