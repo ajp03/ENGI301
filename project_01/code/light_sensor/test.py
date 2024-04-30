@@ -1,3 +1,5 @@
+""" test code for the light sensor """
+
 # SPDX-FileCopyrightText: 2020 Bryan Siepert, written for Adafruit Industries
 
 # SPDX-License-Identifier: Unlicense

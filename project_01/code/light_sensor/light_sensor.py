@@ -31,7 +31,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
 
-Soil Sensor Driver
+Light Sensor Driver
 
   This driver can support the Adafruit STEMMA Soil Sensor - I2C Capacitive Moisture Sensor. It combines code from 
   https://learn.adafruit.com/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor/python-circuitpython-test and
@@ -39,16 +39,16 @@ Soil Sensor Driver
 
 Software API:
 
-    turn_on_moisture_sensor()
+    turn_on_light_sensor()
       - turns on sensor
         
-    turn_off_moisture_sensor()
+    turn_off_light_sensor()
       - turns off sensor
     
     setup_sensor()
       - sets up sensor
 
-    read_moisture()
+    read_light()
       - reads value from sensor and returns "water" as either "low" or "okay"
 """
 
@@ -94,12 +94,6 @@ def read_light():
     """ set up and read moisture level"""
    
     touch = sesnor.lux
-    if touch < 580: #chose a threshold value
-        light = "bad"
-    else:
-        light = "good"
-    print("  light: " + str(light))
-    
-    return(light)
+    return touch
     
 #End def

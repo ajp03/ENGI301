@@ -49,7 +49,7 @@ Software API:
       - sets up sensor
 
     read_moisture()
-      - reads value from sensor and returns "water" as either "low" or "okay"
+      - reads value from sensor and returns it
 """
 
 import time
@@ -87,12 +87,6 @@ def read_moisture():
     """ set up and read moisture level"""
    
     touch = ss.moisture_read()
-    if touch < 580:
-        water = "low"
-    else:
-        water = "okay"
-    print("  moisture: " + str(water))
-    
-    return(water)
+    return touch
     
 #end def
