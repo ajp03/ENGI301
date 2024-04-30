@@ -56,6 +56,7 @@ Requirements:
 Uses:
   - HT16K33 display library developed in class
     - Library updated to add "set_digit_raw()", "set_colon()"
+  - Button 
 
 """
 import time
@@ -98,18 +99,17 @@ class PocketPlant():
     
     def __init__(self, reset_time=2.0, button="P2_2", 
                        red_led="P2_6", green_led="P2_4",
-                       potentiometer="P1_19", servo="P1_36",
-                       buzzer-"P2_1",
-                       i2c_bus=1, i2c_address=0x70, debug=False):
+                       pump="P2_36", soil_sensor="P1_21"
+                       i2c_bus1=1, i2c_address1=0x70, i2c_bus2=2, i2c_address2=0x23, debug=False):
         """ Initialize variables and set up display """
 
         self.reset_time     = reset_time
-        self.soil_sensor    = SOIL.soil_sensor(soil_sensor) #is this supposed to be in here
-        self.light_sensor   = LIGHT.light_sensor(light_sensor) 
+        self.soil_sensor    = SOIL.soil_sensor(soil_sensor)
+        self.light_sensor   = LIGHT.light_sensor(i2c_bus2, i2c_address2) 
         self.green_led      = LED.LED(green_led)
         self.red_led        = LED.LED(red_led)
-        self.pump           = PUMP.pump() #what goes in here
-        self.display        = HT16K33.HT16K33(i2c_bus, i2c_address)
+        self.pump           = PUMP.pump(pump) #what goes in here
+        self.display        = HT16K33.HT16K33(i2c_bus1, i2c_address1)
         self.button         = BUTTON.button(button)
         self.debug          = debug
         self._setup()

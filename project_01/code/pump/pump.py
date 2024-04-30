@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Pump Driver
 
-  This driver can support turns on and off a pump using a relay.
+  This driver can support turns on and off a pump using a relay. It is modeled off the LED driver from class.
 
 Software API:
     setup()
