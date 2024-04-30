@@ -123,20 +123,56 @@ class PocketPlant():
         # Initialize Display
         self.set_display_dash()
         
-        #set up soil sensor (does this have to go here)
+        # Setup Soil Sensor
         self.soil_sensor.setup_sensor()
         
+        # Setup light sensor
         self.light_sensor.setup_sensor()
-
-        # Button / LEDs / Servo 
-        #   - All initialized by libraries when instanitated
-
+        
+        # Setup pump
+        self.pump.setup()
+        
     # End def
     
-    def default(self)
-    """Set up default state."""
-    # End def
 
+    def set_threshold()
+        """Sets threshold for water and light to determine if readings are good or bad
+            - diplay dashes
+            - when button pressed for 2 sec, display H20 
+            - toggle through lo, med, hi with button press, when press and hold, display lite
+            - toggle through lo, med, hi with button press
+            - return water_threshold, light_threshold
+        """
+        #display states for setting threshold
+        water_threshold_text = ["lo","med","hi"]
+        light_threshold_text = ["lo","med","hi"]
+        
+        #set water threshold
+        self.display.set_display_dash()
+        if self.button.button_press_time > 2
+            self.display.text("H20")
+            count = 0
+            if self.button.is_pressed == True
+                water_threshold = water_threshold_text(count)
+                self.display.text(water_threshold)
+                if count < 2
+                    count = count + 1
+                else
+                    count = 0
+                #set light threshold
+                if button.button_press_time > 2
+                    self.display.text("lite")
+                    if self.button.is_pressed == True
+                        water_threshold = water_threshold_text(count)
+                        self.display.text(water_threshold)
+                        if count < 2
+                            count = count + 1
+                        else
+                            count = 0
+                        if button.button_press_time > 2
+                            self.display.set_display_dash()
+                            return water_threshold, light_threshold
+    # End def
     
     def count(self)
     """ Increment display to count harvests
@@ -166,8 +202,6 @@ class PocketPlant():
 
     # End def
 
-   
-   #do i need the start and stop watering
     def start_watering(self):
         """Water plant.
             - red LED on
@@ -219,27 +253,30 @@ class PocketPlant():
         time.sleep(1)
                 
         while(1):
-            # Set Display to 0000
-            self.set_display_default()
-
-            # Wait for button press (do nothing)
-            self.button.wait_for_button
+            
+            #Set up threshold values
+            self.set_threshold()
                 
-            # Monitor light
+            # Monitor light and change LEDs to indicate light levels 
             self.light_monitor()
             
             #Track harvests
             self.count()
             
             #Monitor water and water if needed
-            if self.soil_sensor.read_moisture < 500 #choose some threshold
+            if self.soil_sensor.read_moisture < water_threshold
                 self.pump.on
                 self.green_led.off
-                while self.soil_sensor.read_moisture < 500:
+                while self.soil_sensor.read_moisture < water_threshold
                     self.red_led.on
                     time.sleep(.1)
                     self.red_led.off
                     time.sleep(.1)
+                if self.soil_sensor.read_moisture > water_threshold
+                    self.pump.off
+                    self.red_led.off
+                    self.green_led.on
+                    
             time.sleep(1)
 
     # End def
@@ -291,16 +328,16 @@ if __name__ == '__main__':
 
     print("Program Start")
 
-    # Create instantiation of the lock
-    combo_lock = CombinationLock(debug=True)
+    # Create instantiation of the PocketPlant
+    combo_lock = PocketPlant(debug=True)
 
     try:
-        # Run the lock
-        combo_lock.run()
+        # Run the program
+        main.run()
 
     except KeyboardInterrupt:
         # Clean up hardware when exiting
-        combo_lock.cleanup()
+        main.cleanup()
 
     print("Program Complete")
 
