@@ -47,16 +47,17 @@ Requirements:
     - Watering State: Pump on, green led flashing, red led off, display WATR
     - Poor Light Conditions State: Pump off, red led on, display POOR
     - User interaction:
+      - Needs to be able to set water and light thresholds
       - Needs to be able to increment the counter using the button
         - press button to increase by 1
       - Needs to be able to reset counter 
         - press and hold button for 2 seconds
     
+    
 
 Uses:
   - HT16K33 display library developed in class
     - Library updated to add "set_digit_raw()", "set_colon()"
-  - Button 
 
 """
 import time
@@ -66,7 +67,6 @@ import ht16k33       as HT16K33
 import soil_sensor   as SOIL
 import light_sesnor  as LIGHT
 import pump          as PUMP
-import tricolor_led  as TRILED
 import led           as LED
 
 # ------------------------------------------------------------------------
@@ -316,7 +316,6 @@ class PocketPlant():
     # End def
 
 # End class
-
 
 
 # ------------------------------------------------------------------------
