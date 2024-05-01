@@ -100,16 +100,16 @@ class PocketPlant():
     def __init__(self, reset_time=2.0, button="P2_2", 
                        red_led="P2_6", green_led="P2_4",
                        pump="P2_36", soil_sensor="P1_21"
-                       i2c_bus1=1, i2c_address1=0x70, i2c_bus2=2, i2c_address2=0x23, debug=False):
+                       "i2c_bus=1, i2c_address=0x70, i2c_bus=2, i2c_address=0x23," ):
         """ Initialize variables and set up display """
 
         self.reset_time     = reset_time
         self.soil_sensor    = SOIL.soil_sensor(soil_sensor)
-        self.light_sensor   = LIGHT.light_sensor(i2c_bus2, i2c_address2) 
+        self.light_sensor   = LIGHT.light_sensor(1, 0x70) 
         self.green_led      = LED.LED(green_led)
         self.red_led        = LED.LED(red_led)
-        self.pump           = PUMP.pump(pump) #what goes in here
-        self.display        = HT16K33.HT16K33(i2c_bus1, i2c_address1)
+        self.pump           = PUMP.pump(pump) 
+        self.display        = HT16K33.HT16K33(2, 0x23)
         self.button         = BUTTON.button(button)
         self.debug          = debug
         self._setup()
@@ -135,7 +135,7 @@ class PocketPlant():
     # End def
     
 
-    def set_threshold()
+    def set_threshold(self):
         """Sets threshold for water and light to determine if readings are good or bad
             - diplay dashes
             - when button pressed for 2 sec, display H20 
@@ -149,37 +149,36 @@ class PocketPlant():
         
         #set water threshold
         self.display.set_display_dash()
-        if self.button.button_press_time > 2
+        if self.button.button_press_time > 2:
             self.display.text("H20")
             count = 0
-            if self.button.is_pressed == True
+            if self.button.is_pressed == True:
                 water_threshold = water_threshold_text(count)
                 self.display.text(water_threshold)
-                if count < 2
+                if count < 2:
                     count = count + 1
-                else
+                else:
                     count = 0
                 #set light threshold
-                if button.button_press_time > 2
+                if button.button_press_time > 2:
                     self.display.text("lite")
-                    if self.button.is_pressed == True
+                    if self.button.is_pressed == True:
                         water_threshold = water_threshold_text(count)
                         self.display.text(water_threshold)
-                        if count < 2
+                        if count < 2:
                             count = count + 1
-                        else
+                        else:
                             count = 0
-                        if button.button_press_time > 2
+                        if button.button_press_time > 2:
                             self.display.set_display_dash()
                             return water_threshold, light_threshold
     # End def
     
-    def count(self)
-    """ Increment display to count harvests
+    def count(self):
+        """ Increment display to count harvests
             - change display by 1 when button is pressed 
-            - reset display when press and hold button
-    
-    """
+            - reset display when press and hold button 
+        """
         harvest_count                = 0        # Number of harvests to be displayed
         button_press_time            = 0.0      # Time button was pressed (in seconds)
         
@@ -264,15 +263,15 @@ class PocketPlant():
             self.count()
             
             #Monitor water and water if needed
-            if self.soil_sensor.read_moisture < water_threshold
+            if self.soil_sensor.read_moisture < water_threshold:
                 self.pump.on
                 self.green_led.off
-                while self.soil_sensor.read_moisture < water_threshold
+                while self.soil_sensor.read_moisture < water_threshold:
                     self.red_led.on
                     time.sleep(.1)
                     self.red_led.off
                     time.sleep(.1)
-                if self.soil_sensor.read_moisture > water_threshold
+                if self.soil_sensor.read_moisture > water_threshold:
                     self.pump.off
                     self.red_led.off
                     self.green_led.on

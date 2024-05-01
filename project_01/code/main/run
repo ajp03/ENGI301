@@ -40,12 +40,12 @@ cd /var/lib/cloud9/ENGI301/project_01/code/main
 ./configure_pins.sh
 
 dirs=( 
-    '/var/lib/cloud9/ENGI301/python/ht16k33:'
-    '/var/lib/cloud9/ENGI301/python/servo:'
-    '/var/lib/cloud9/ENGI301/python/button:'
-    '/var/lib/cloud9/ENGI301/python/led:'
-    '/var/lib/cloud9/ENGI301/python/potentiometer:'
-    '/var/lib/cloud9/ENGI301/python/buzzer'
+    '/var/lib/cloud9/ENGI301/project_01/code/ht16k33:'
+    '/var/lib/cloud9/ENGI301/project_01/code/button:'
+    '/var/lib/cloud9/ENGI301/project_01/code/led::'
+    '/var/lib/cloud9/ENGI301/project_01/code/light_sensor:'
+    '/var/lib/cloud9/ENGI301/project_01/code/soil_sensor:'
+    '/var/lib/cloud9/ENGI301/project_01/code/pump'
 )
 
 PYTHONPATH=$(IFS=; echo "${dirs[*]}") python3 main.py
