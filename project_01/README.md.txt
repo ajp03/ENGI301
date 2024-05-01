@@ -1,6 +1,6 @@
 Project 1: Pocket Plant
 
-Hackster link: 
+Hackster link: https://www.hackster.io/ameliapillar/pocket-plant-af2e39
 
 Libraries to install:
 sudo apt-get update
