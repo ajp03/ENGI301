@@ -61,32 +61,35 @@ i2c_bus = board.I2C()  # uses board.SCL and board.SDA
 
 ss = Seesaw(i2c_bus, addr=0x36)
 
+class soil_sensor():
+    """ LED Class """
+    pin             = None
 
-def turn_off_moisture_sensor():
-    """Turn off the moisture sensor 
-    """
-    gpio_set(GPIO_VAL, LOW)
-# End def
-
-
-def turn_on_moisture_sensor():
-    """Turn on the moisture sensor
-    """
-    gpio_set(GPIO_VAL, HIGH)
-# End def
-
-
-def setup_sensor():
-    """Setup all the pins for the reading.
-    """
-    gpio_setup(GPIO_VAL, OUT, LOW)
-#End def
-
-
-def read_moisture():
-    """ set up and read moisture level"""
-   
-    touch = ss.moisture_read()
-    return touch
+    def turn_off_moisture_sensor():
+        """Turn off the moisture sensor 
+        """
+        gpio_set(GPIO_VAL, LOW)
+    # End def
     
-#end def
+    
+    def turn_on_moisture_sensor():
+        """Turn on the moisture sensor
+        """
+        gpio_set(GPIO_VAL, HIGH)
+    # End def
+    
+    
+    def setup_sensor():
+        """Setup all the pins for the reading.
+        """
+        gpio_setup(GPIO_VAL, OUT, LOW)
+    #End def
+    
+    
+    def read_moisture():
+        """ set up and read moisture level"""
+       
+        touch = ss.moisture_read()
+        return touch
+        
+    #end def

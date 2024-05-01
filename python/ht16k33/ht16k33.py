@@ -4,7 +4,7 @@
 HT16K33 I2C Library
 --------------------------------------------------------------------------
 License:   
-Copyright 2018-2024 <NAME>
+Copyright 2018-2024 Amelia Pillar
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
