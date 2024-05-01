@@ -62,7 +62,7 @@ i2c_bus = board.I2C()  # uses board.SCL and board.SDA
 ss = Seesaw(i2c_bus, addr=0x36)
 
 class soil_sensor():
-    """ LED Class """
+    """ soil_sensor Class """
     pin             = None
 
     def turn_off_moisture_sensor():
